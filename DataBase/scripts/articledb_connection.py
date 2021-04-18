@@ -7,7 +7,9 @@ import gcloud
 #creates remote sql instance on google cloud
 #user: postgres, password: NewsChain2021
 def create_google_sql_instance():
-    os.system("gcloud sql instances create articledb --database--version=POSTGRES_11" +
+    os.system("gcloud init")
+    os.system("gcloud auth login")
+    os.system("gcloud sql instances create articledb --database-version=POSTGRES_11 " +
               "--cpu=2 --memory=7680MB --region=us-east4")
     os.system("gcloud sql users set-password postgres --instance=articledb --password=NewsChain2021")
 
