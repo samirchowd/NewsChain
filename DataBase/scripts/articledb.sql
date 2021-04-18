@@ -6,21 +6,12 @@ SET search_path TO articledb;
 ---------------------- ArticleDB Schema Creation --------------------------
 
 CREATE TABLE Article(
-article_id integer PRIMARY KEY,
+article_id integer PRIMARY KEY NOT NULL,
 title text NOT NULL,
-abstract text NOT NULL
-);
-
-CREATE TABLE Author(
-	author text,
-	title text NOT NULL,
-	publication_date Timestamp NOT NULL
-);
-
-CREATE TABLE Abstract(
-	abstract_d integer PRIMARY KEY,
-	abst text NOT NULL
-);
+abstract text NOT NULL,
+author text,
+source varchar(200),
+time_stamp Timestamp NOT NULL);
 
 ------------------- ArticleDB Data Loading -------------------------------
 
@@ -33,18 +24,8 @@ CREATE TABLE Abstract(
 -- populated successfully!)
 
 
--- COPY Article(article_id, title, abstract)
--- FROM PROGRAM '/home/Panda21/Documents/Emory/2020 - 2021/Spring 2021/CS 329/NewsChain Project/venv/Article'
--- DELIMITER ','
--- CSV HEADER;
-
--- COPY Author(author, title, publication_date)
--- FROM PROGRAM '/home/Panda21/Documents/Emory/2020 - 2021/Spring 2021/CS 329/NewsChain Project/venv/Author'
--- DELIMITER ','
--- CSV HEADER;
-
--- COPY Abstract(abstract_id, abst)
--- FROM PROGRAM '/home/Panda21/Documents/Emory/2020 - 2021/Spring 2021/CS 329/NewsChain Project/venv/Abstract'
+-- COPY Article(article_id, title, abstract, author, source, time_stamp)
+-- FROM PROGRAM '/home/Panda21/Documents/Emory/2020 - 2021/Spring 2021/CS 329/NewsChain Project/venv/cleaned_data'
 -- DELIMITER ','
 -- CSV HEADER;
 
