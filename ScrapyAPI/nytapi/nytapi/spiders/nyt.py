@@ -6,15 +6,21 @@ from pprint import pprint
 
 def loadSites(query, start):
     result = []
-    for x in range(start):
+    for x in range(start, start + 10):
         result.append("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=" + query + "&page=" + str(x) + "&begin_date=20190101&end_date=20210301&api-key=CnAxA1q2BGHoUPJ1CBYy9WEKmhkvQH6W")
     return result
 
 class NytSpider(scrapy.Spider):
     name = 'nyt'
-    allowed_domains = ['api.nytimes.com']
-    start_urls = loadSites("vaccine", 10)
-    output = "nytapi.csv"
+    query = '"Johnson" OR "Johnson & Johnson" OR "Johnson and Johnson"'
+    start_urls = loadSites(query, 90)
+    output = "nytAPI2.csv"
+
+    #def __init__(self, pagenum=0, **kwargs):
+        #query = self.query
+        #self.allowed_domains = ['api.nytimes.com']
+        #self.start_urls = [f'https://api.nytimes.com/svc/search/v2/articlesearch.json?q={query}&page={pagenum}&begin_date=20190101&end_date=20210301&api-key=CnAxA1q2BGHoUPJ1CBYy9WEKmhkvQH6W']  # py36
+        #super().__init__(**kwargs)
 
     def parse(self, response):
         query = self.query
