@@ -73,7 +73,7 @@ def doc_sim(v1, v2):
 
     return cosine_similarity(v1.reshape(1,-1),v2.reshape(1,-1))[0][0]
 
-def ent_sim(e1, e2):
+def ent_sim(a1, a2):
     pass
 
 def eos(doc_sim, ent_sim, alpha):
