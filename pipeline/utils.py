@@ -2,34 +2,33 @@
 # Class containing code for all utility functions 
 
 import numpy as np
-from sentence_transformers import SentenceTransformer, models
+from sentence_transformers import SentenceTransformer, util
 from sklearn.metrics.pairwise import cosine_similarity
 import spacy
 import pandas as pd
 import glob as g
+import time
 
 files = g.glob("../DataBase/data/*.csv")
 
-def toframe(files):
+
+def toframe(files, attribute):
     """Generate pandas data frame from article csv
 
     Positional Arguments:
     files -- file path for article csv's
     """
+
     col_names = ['title', 'abstract', 'author', 'source', 'time_stamp', 'link', 'query']
     articles = []
     for filename in files:
         articles.append(pd.read_csv(filename, names=col_names))
 
-    #Concatenate all data into one DataFrame
     article_frame = pd.concat(articles, ignore_index=True)
-
-    #drops duplicates based on title and keeps first occurence
     article_frame.drop_duplicates(['title'], inplace=True)
 
     # hash function to generate article id. Uses link, because it is a unique value for each article
     key_vals = []
-
     for i, row in article_frame.iterrows():
         key = hash(row['link'])
         if key not in key_vals:
@@ -40,7 +39,9 @@ def toframe(files):
                 key_vals.append(key)
 
     article_frame.insert(loc=0, column='article_id', value=key_vals)
-    return article_frame
+    #query_frame = article_frame[articles['query']].str.contains('sample_query')
+    sentenceList = article_frame[attribute].tolist()
+    return sentenceList
 
 def encode(text, model):
     """Encode a set of text given an encoding model
@@ -50,8 +51,17 @@ def encode(text, model):
     model -- model generated from sentence_transformers
     a fixed-sized output representation (vector u) accomplished by pooling
     """
-    sentence_embeddings = model.encode(text)
-    return sentence_embeddings
+    start_time = time.time()
+    end_time = time.time()
+    model.max_seq_length = 300
+    sentence_embedding = model.encode(text, convert_to_tensor=True)
+    print("Time for computting embeddings:" + str(end_time - start_time))
+    return sentence_embedding
+
+# sentenceList = toframe(files, 'abstract')
+# roberta = SentenceTransformer('stsb-roberta-base')
+# embedding = encode(sentenceList, roberta)
+
 
 def doc_sim(v1, v2):
     """Find the similarity between two articles
