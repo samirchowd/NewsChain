@@ -1,7 +1,7 @@
 import pandas as pd
 import glob
 
-filenames = glob.glob("data/*.csv")
+filenames = glob.glob("../data/*.csv")
 
 articles = []
 col_names = ['title', 'abstract', 'author', 'source', 'time_stamp', 'link']
@@ -25,34 +25,19 @@ big_frame = pd.concat(articles, ignore_index=True)
 
 big_frame.drop_duplicates(inplace=True) # removes any duplicate rows
 
-del big_frame['source']
-del big_frame['link']
-# del big_frame['temp_time_stamp']
-
-# assign article id
-shape = big_frame.shape
-num_rows = shape[0]
+# hash function to generate article id. Uses link, because it is a unique value for each article
 key_vals = []
-
-# get number of rows
-for x in range(num_rows):
-    key_vals.append(x)
-
-# insert article id 0-n
-big_frame.insert(loc=0, column='article_id', value=key_vals)
 print(big_frame)
-
-print(big_frame.values)
-data_types = big_frame.dtypes
-print(data_types)
+for i, row in big_frame.iterrows():
+    key = hash(row['link'])
+    if key not in key_vals:
+        key_vals.append(key)
+    else:
+        key = hash(row['title'])
+        if key not in key_vals:
+            key_vals.append(key)
+big_frame.insert(loc=0, column='article_id', value=key_vals)
+print(len(big_frame))
 
 # create cleaned csv file for future use
-new_frame = big_frame.to_csv('cleaned_data', index=False)
-
-Article = big_frame[['article_id', 'title', 'abstract']]
-Abstract = big_frame[['article_id', 'abstract']]
-Author = big_frame[['author', 'title', 'time_stamp']]
-
-Article.to_csv('Article', index=False)
-Abstract.to_csv('Abstract', index=False)
-Author.to_csv('Author', index=False)
+big_frame.to_csv('../data/cleaned_data', index=False)
