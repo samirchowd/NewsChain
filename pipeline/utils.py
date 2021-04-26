@@ -66,8 +66,6 @@ def toframe(files, attribute, query):
             fl.append(temp_list)
         return fl
 
-a = toframe(files, 'abstract', 'Johnson & Johnson')
-print(a)
 
 def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
