@@ -64,7 +64,9 @@ def toframe(files, attribute, query):
             fl.append(temp_list)
         return fl
 
-def encode(text, model):
+    return article_frame 
+
+def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
 
     Positional Arguments:
@@ -73,9 +75,9 @@ def encode(text, model):
     a fixed-sized output representation (vector u) accomplished by pooling
     """
     start_time = time.time()
+    model.max_seq_length = max_seq_length 
+    sentence_embedding = model.encode(text)
     end_time = time.time()
-    model.max_seq_length = 300
-    sentence_embedding = model.encode(text, convert_to_tensor=True)
     print("Time for computting embeddings:" + str(end_time - start_time))
     return sentence_embedding
 
@@ -100,14 +102,9 @@ def ent_sim(a1, a2):
 def eos(doc_sim, ent_sim, alpha):
     return (alpha*doc_sim) + ((1-alpha)*ent_sim)
 
-def get_entities(text, conf = 0.35):
-    """Returns a set of entities given a text and a model
-
-    Positional Arguments:
-    text -- article to extract entites from
-    model -- model generated from spacy
-    """
+def get_ents(text, confidence= 0.35):
     import requests
+    from IPython.core.display import display, HTML# An API Error Exception
     class APIError(Exception):
         def __init__(self, status):
             self.status = status
@@ -115,16 +112,20 @@ def get_entities(text, conf = 0.35):
                 return "APIError: status={}".format(self.status)
 
     # Base URL for Spotlight API
-    base_url = "http://api.dbpedia-spotlight.org/en/annotate"# Parameters
-    # 'text' - text to be annotated
+    base_url = "http://api.dbpedia-spotlight.org/en/annotate"# Parameters 
+    # 'text' - text to be annotated 
     # 'confidence' -   confidence score for linking
-    params = {"text": text, "confidence": conf}# Response content type
+    params = {"text": text, "confidence": confidence}# Response content type
     headers = {'accept': 'application/json'}# GET Request
     res = requests.get(base_url, params=params, headers=headers)
     if res.status_code != 200:
         # Something went wrong
         raise APIError(res.status_code)# Display the result as HTML in Jupyter Notebook
-    return res
+    
+    import json 
+    bruh = json.loads(res.content)
+    
+    return [x['@URI'] for x in bruh['Resources']]
 
 def cluster():
     pass
