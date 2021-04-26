@@ -12,7 +12,7 @@ import time
 files = g.glob("../DataBase/data/*.csv")
 
 
-def toframe(files, attribute=None):
+def toframe(files, attribute, query):
     """Generate pandas data frame from article csv
 
     Positional Arguments:
@@ -39,10 +39,30 @@ def toframe(files, attribute=None):
                 key_vals.append(key)
 
     article_frame.insert(loc=0, column='article_id', value=key_vals)
-    #query_frame = article_frame[articles['query']].str.contains('sample_query')
-    if attribute: 
-        sentenceList = article_frame[attribute].tolist()
+    af = article_frame.dropna()
+
+    if attribute is not None and query is not None:
+        query_frame = af[af['query'].str.contains(query)]
+        sentenceList = query_frame[attribute].tolist()
         return sentenceList
+    elif attribute is not None:
+        sentenceList = af[attribute].tolist()
+        return sentenceList
+    elif query is not None:
+        temp_list = list()
+        fl = []
+        query_frame = af[af['query'].str.contains(query)]
+        for col in query_frame:
+            temp_list = article_frame[col].tolist()
+            fl.append(temp_list)
+        return fl
+    else:
+        temp_list = list()
+        fl = []
+        for col in af:
+            temp_list = article_frame[col].tolist()
+            fl.append(temp_list)
+        return fl
 
     return article_frame 
 
