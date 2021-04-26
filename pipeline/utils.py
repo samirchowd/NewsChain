@@ -12,7 +12,7 @@ import time
 files = g.glob("../DataBase/data/*.csv")
 
 
-def toframe(files, attribute, query):
+def toframe(files, attribute=None, query=None):
     """Generate pandas data frame from article csv
 
     Positional Arguments:
@@ -53,13 +53,6 @@ def toframe(files, attribute, query):
         fl = []
         query_frame = af[af['query'].str.contains(query)]
         for col in query_frame:
-            temp_list = article_frame[col].tolist()
-            fl.append(temp_list)
-        return fl
-    else:
-        temp_list = list()
-        fl = []
-        for col in af:
             temp_list = article_frame[col].tolist()
             fl.append(temp_list)
         return fl
