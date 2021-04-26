@@ -57,8 +57,8 @@ def toframe(files, attribute=None, query=None):
             fl.append(temp_list)
         return fl
 
-    return article_frame 
-
+a = toframe(files, 'abstract', 'moderna')
+print(a)
 def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
 
