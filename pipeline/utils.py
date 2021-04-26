@@ -15,7 +15,7 @@ from scipy import spatial
 files = g.glob("../DataBase/data/*.csv")
 
 
-def toframe(files, attribute, query):
+def toframe(files, attribute=None, query=None):
     """Generate pandas data frame from article csv
     Positional Arguments:
     files -- file path for article csv's
