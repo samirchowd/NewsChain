@@ -59,12 +59,7 @@ def toframe(files, attribute, query):
             fl.append(temp_list)
         return fl
     else:
-        temp_list = list()
-        fl = []
-        for col in af:
-            temp_list = article_frame[col].tolist()
-            fl.append(temp_list)
-        return fl
+       return af
 
 
 def encode(text, model, max_seq_length = 300):
@@ -81,10 +76,6 @@ def encode(text, model, max_seq_length = 300):
     end_time = time.time()
     print("Time for computting embeddings:" + str(end_time - start_time))
     return sentence_embedding
-
-# sentenceList = toframe(files, 'abstract')
-# roberta = SentenceTransformer('stsb-roberta-base')
-# embedding = encode(sentenceList, roberta)
 
 
 def doc_sim(v1, v2):
