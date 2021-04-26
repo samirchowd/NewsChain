@@ -117,7 +117,7 @@ def get_ents(text, confidence= 0.35):
     import json 
     bruh = json.loads(res.content)
     
-    return [x['@URI'] for x in bruh['Resources']]
+    return set([x['@URI'] for x in bruh['Resources']])
 
 def cluster():
     pass
