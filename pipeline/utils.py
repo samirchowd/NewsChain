@@ -59,7 +59,7 @@ def toframe(files, attribute, query):
             fl.append(temp_list)
         return fl
     else:
-       return af
+        return af
 
 
 def encode(text, model, max_seq_length = 300):
