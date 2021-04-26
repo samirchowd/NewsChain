@@ -12,11 +12,13 @@ import time
 files = g.glob("../DataBase/data/*.csv")
 
 
-def toframe(files, attribute=None, query=None):
+def toframe(files, attribute, query):
     """Generate pandas data frame from article csv
 
     Positional Arguments:
     files -- file path for article csv's
+
+    Valid queries: 'pfizer', 'moderna', 'Johnson and Johnson', 'Johnson', 'Johnson & Johnson', 'covid', 'coronavirus', 'vaccine', 'covid 19'
     """
 
     col_names = ['title', 'abstract', 'author', 'source', 'time_stamp', 'link', 'query']
@@ -42,7 +44,7 @@ def toframe(files, attribute=None, query=None):
     af = article_frame.dropna()
 
     if attribute is not None and query is not None:
-        query_frame = af[af['query'].str.contains(query)]
+        query_frame = af[af['query'].astype(str).str.contains(query)]
         sentenceList = query_frame[attribute].tolist()
         return sentenceList
     elif attribute is not None:
@@ -56,9 +58,17 @@ def toframe(files, attribute=None, query=None):
             temp_list = article_frame[col].tolist()
             fl.append(temp_list)
         return fl
+    else:
+        temp_list = list()
+        fl = []
+        for col in af:
+            temp_list = article_frame[col].tolist()
+            fl.append(temp_list)
+        return fl
 
-a = toframe(files, 'abstract', 'moderna')
+a = toframe(files, 'abstract', 'Johnson & Johnson')
 print(a)
+
 def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
 
