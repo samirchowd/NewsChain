@@ -12,11 +12,13 @@ import time
 files = g.glob("../DataBase/data/*.csv")
 
 
-def toframe(files, attribute=None, query=None):
+def toframe(files, attribute, query):
     """Generate pandas data frame from article csv
 
     Positional Arguments:
     files -- file path for article csv's
+
+    Valid queries: 'pfizer', 'moderna', 'Johnson and Johnson', 'Johnson', 'Johnson & Johnson', 'covid', 'coronavirus', 'vaccine', 'covid 19'
     """
 
     col_names = ['title', 'abstract', 'author', 'source', 'time_stamp', 'link', 'query']
@@ -42,7 +44,7 @@ def toframe(files, attribute=None, query=None):
     af = article_frame.dropna()
 
     if attribute is not None and query is not None:
-        query_frame = af[af['query'].str.contains(query)]
+        query_frame = af[af['query'].astype(str).str.contains(query)]
         sentenceList = query_frame[attribute].tolist()
         return sentenceList
     elif attribute is not None:
@@ -56,9 +58,10 @@ def toframe(files, attribute=None, query=None):
             temp_list = article_frame[col].tolist()
             fl.append(temp_list)
         return fl
+    else:
+       return af
 
-a = toframe(files, 'abstract', 'moderna')
-print(a)
+
 def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
 
@@ -73,10 +76,6 @@ def encode(text, model, max_seq_length = 300):
     end_time = time.time()
     print("Time for computting embeddings:" + str(end_time - start_time))
     return sentence_embedding
-
-# sentenceList = toframe(files, 'abstract')
-# roberta = SentenceTransformer('stsb-roberta-base')
-# embedding = encode(sentenceList, roberta)
 
 
 def doc_sim(v1, v2):
