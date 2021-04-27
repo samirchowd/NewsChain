@@ -150,6 +150,7 @@ def knowledgeSim(abstract_i, abstract_j):
     jaccard_distance = 1 - jaccard_similarity
     return jaccard_distance
 
+
 def knowledge_sim(article_i, article_j):
     ai = get_ents(article_i.lower())
     aj = get_ents(article_j.lower())
@@ -157,7 +158,7 @@ def knowledge_sim(article_i, article_j):
     union = ai.union(aj)
     intersect = ai.intersection(aj)
 
-    jaccard_coefficient = intersect / union
+    jaccard_coefficient = len(intersect) / len(union)
     jaccard_distance = 1 - jaccard_coefficient
 
     return jaccard_distance
