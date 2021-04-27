@@ -62,6 +62,10 @@ def toframe(files, attribute=None, query=None):
     else:
         return af
 
+data = toframe(files)
+d = data[data['query'].str.contains('pfizer')]
+print(d)
+
 def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
 
@@ -76,7 +80,6 @@ def encode(text, model, max_seq_length = 300):
     end_time = time.time()
     print("Time for computting embeddings:" + str(end_time - start_time))
     return sentence_embedding
-
 
 def doc_sim(v1, v2):
     """Find the similarity between two articles
