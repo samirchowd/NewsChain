@@ -116,8 +116,11 @@ def get_ents(text, confidence= 0.35):
     
     import json 
     bruh = json.loads(res.content)
-    
-    return set([x['@URI'] for x in bruh['Resources']])
+
+    try:
+        return set([x['@URI'] for x in bruh['Resources']])
+    except:
+        return set()
 
 def cluster():
     pass
@@ -145,6 +148,18 @@ def knowledgeSim(abstract_i, abstract_j):
     vj = vectorize(abstract_j)
     jaccard_similarity = spatial.distance.jaccard(vi, vj)
     jaccard_distance = 1 - jaccard_similarity
+    return jaccard_distance
+
+def knowledge_sim(article_i, article_j):
+    ai = get_ents(article_i.lower())
+    aj = get_ents(article_j.lower())
+
+    union = ai.union(aj)
+    intersect = ai.intersection(aj)
+
+    jaccard_coefficient = intersect / union
+    jaccard_distance = 1 - jaccard_coefficient
+
     return jaccard_distance
 
 def Compute_EOS(di, dj, alpha):  # di, dj are 7-tuples, whose 2nd element is abstract

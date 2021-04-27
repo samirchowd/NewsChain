@@ -12,9 +12,9 @@ def loadSites(query, start):
 
 class NytSpider(scrapy.Spider):
     name = 'nyt'
-    query = '"Johnson" OR "Johnson & Johnson" OR "Johnson and Johnson"'
-    start_urls = loadSites(query, 90)
-    output = "nytAPI2.csv"
+    query = '"Johnson & Johnson" OR "Johnson and Johnson"'
+    start_urls = loadSites(query, 00)
+    output = "newCSV.csv"
 
     #def __init__(self, pagenum=0, **kwargs):
         #query = self.query
