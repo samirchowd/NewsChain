@@ -62,10 +62,6 @@ def toframe(files, attribute=None, query=None):
     else:
         return af
 
-data = toframe(files)
-d = data[data['query'].str.contains('pfizer')]
-print(d)
-
 def encode(text, model, max_seq_length = 300):
     """Encode a set of text given an encoding model
 
@@ -74,11 +70,8 @@ def encode(text, model, max_seq_length = 300):
     model -- model generated from sentence_transformers
     a fixed-sized output representation (vector u) accomplished by pooling
     """
-    start_time = time.time()
     model.max_seq_length = max_seq_length 
     sentence_embedding = model.encode(text)
-    end_time = time.time()
-    print("Time for computting embeddings:" + str(end_time - start_time))
     return sentence_embedding
 
 def doc_sim(v1, v2):
@@ -91,11 +84,21 @@ def doc_sim(v1, v2):
 
     return cosine_similarity(v1.reshape(1,-1),v2.reshape(1,-1))[0][0]
 
-def ent_sim(a1, a2):
-    pass
+def knowledge_sim(article_i, article_j):
+    ai = get_ents(article_i.lower())
+    aj = get_ents(article_j.lower())
 
-def eos(doc_sim, ent_sim, alpha):
-    return (alpha*doc_sim) + ((1-alpha)*ent_sim)
+    union = ai.union(aj)
+    intersect = ai.intersection(aj)
+
+    jaccard_coefficient = len(intersect) / len(union)
+    return jaccard_coefficient
+
+def eos(a1, a2, alpha, model):
+    v = utils.encode([a1, a2], model)
+    ds = utils.doc_sim(v[0], v[1])
+    ks = utils.knowledge_sim(a1, a2)
+    return (alpha*ds) + ((1-alpha)*ks)
 
 def get_ents(text, confidence= 0.35):
     import requests
@@ -119,8 +122,50 @@ def get_ents(text, confidence= 0.35):
     
     import json 
     bruh = json.loads(res.content)
-    
-    return set([x['@URI'] for x in bruh['Resources']])
 
-def cluster():
-    pass
+    try:
+        return set([x['@URI'] for x in bruh['Resources']])
+    except:
+        return set()
+
+def find_article(links, data):
+    """Find input article in dataset
+
+     Positional Arguments:
+     link -- link of input article
+     data -- original data frame
+
+     Return:
+     pandas dataframe where each row in the frame is an attribute
+     """
+    art = pd.DataFrame()
+    for index, row in data.iterrows():
+        if row['link'] in links:
+            art = art.append(row)
+    return art
+
+
+def relate(data, inp, model, theta1 = 0.5, alpha = 0.45):
+#     list = pd.DataFrame()
+#     for index, row in data.iterrows():
+#         rt = row['title']
+#         for i in inp['title']:
+#             v2 = utils.encode(i, model)
+#             sim_value = utils.doc_sim(v1, v2)
+#             if sim_value > theta1:
+#                 list = list.append(row)
+                
+    df = pd.DataFrame()
+    
+    ctext = []
+    for index, art in inp.iterrows():
+        ctext.append(art['title'] + ': ' + art['abstract'])
+    
+    for _, row in data.iterrows():
+        rt = row['title'] + ': ' + row['abstract']
+        for ct in ctext:
+            if utils.eos(rt, ct, alpha, model) > theta1:
+                df = df.append(row)
+                
+    return df
+
